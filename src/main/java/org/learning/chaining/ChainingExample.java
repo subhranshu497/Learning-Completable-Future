@@ -1,6 +1,5 @@
 package org.learning.chaining;
 
-import com.sun.org.apache.xerces.internal.xs.datatypes.XSDateTime;
 import org.learning.model.User;
 import org.learning.model.UserProfile;
 
@@ -32,21 +31,22 @@ public class ChainingExample {
    private CompletableFuture<User> fetchUser(Long uid){
        return CompletableFuture.supplyAsync(()->{
            stimulateLatency(100);
-           User.of(userId, "jane_doe", "jane@example.com", "PREMIUM");
+           return User.of(uid, "jane_doe", "jane@example.com", "PREMIUM");
+
        });
    }
    private CompletableFuture<List<String>> fetchUserPreferences(Long uid){
        return CompletableFuture.supplyAsync(()->{
            stimulateLatency(30);
            return List.of("dark_mode", "email_notifications", "weekly_digest");
-       })
+       });
    }
    private CompletableFuture<Integer> fetchLoyaltyPoints(Long uid){
       return CompletableFuture.completedFuture(2500);
    }
     private CompletableFuture<String> fetchGreetingTemplate(String username) {
         return CompletableFuture.supplyAsync(() -> {
-            simulateLatency(20);
+            stimulateLatency(20);
             return "Hello, " + username + "! Welcome to our platform.";
         });
     }
@@ -62,7 +62,7 @@ public class ChainingExample {
      */
     private CompletableFuture<String> getUserTier(Long uid){
         return fetchUser(uid)
-                .thenApply(user->user.tier);
+                .thenApply(user->user.tier());
     }
 
     /**
@@ -71,7 +71,7 @@ public class ChainingExample {
      */
     private CompletableFuture<List<String>> getUserPreferencesForUser(Long uid){
         return fetchUser(uid)
-                .thenCompose(user -> fetchUserPreferences(user.id));
+                .thenCompose(user -> fetchUserPreferences(user.id()));
     }
     /**
      * ─────────────────────────────────────────────────────────────────────────
@@ -85,16 +85,16 @@ public class ChainingExample {
         return fetchUser(uid)
                 .thenCompose(user ->
                  //after getting user fetch their preference
-                 fetchUserPreferences(user.id)
+                 fetchUserPreferences(user.id())
                          .thenCompose(pref ->
                                  //now fetch their loyality points
-                                         fetchLoyaltyPoints(user.id)
+                                         fetchLoyaltyPoints(user.id())
                                                  .thenApply(points ->
                                                          //combine everything into userProfile
                                                          //this is sync - object construction
                                                          UserProfile.of(
                                                                  user,
-                                                                 preferences,
+                                                                 pref,
                                                                  LocalDateTime.now(),
                                                                  points,
                                                                  calculateRecommendedPlan(user.tier(), points)
@@ -117,16 +117,16 @@ public class ChainingExample {
         return fetchUser(uid)
                 .thenCompose(user ->{
                     //declare two separate completableFuture
-                    CompletableFuture<List<String>> prefFuture = fetchUserPreferences(user.id);
-                    CompletableFuture<Integer> pointFuture = fetchLoyaltyPoints(user.id);
+                    CompletableFuture<List<String>> prefFuture = fetchUserPreferences(user.id());
+                    CompletableFuture<Integer> pointFuture = fetchLoyaltyPoints(user.id());
                     //use thenCombine - thencombine will wait for both
                     return prefFuture.thenCombine(pointFuture,(pref, point)->
                                     UserProfile.of(
                                             user,
-                                            preferences,
+                                            pref,
                                             LocalDateTime.now(),
-                                            points,
-                                            calculateRecommendedPlan(user.tier(), points)
+                                            point,
+                                            calculateRecommendedPlan(user.tier(), point)
                                     )
                             );
                 });
@@ -142,8 +142,8 @@ public class ChainingExample {
 
     public CompletableFuture<String> getPersonalizedGreeting(Long uid){
         return fetchUser(uid)
-                .thenApply(user->user.userName) // sync
+                .thenApply(user->user.username()) // sync
                 .thenCompose(this::fetchGreetingTemplate) // async
-                .thenApply(String::toUpperCase) // sync
+                .thenApply(String::toUpperCase); // sync
     }
 }

@@ -23,7 +23,7 @@ public class BasicExample {
         //this returns immidiately, actual work is done by separate thread
         return CompletableFuture.supplyAsync(()->{
             //this will run on ForkJoinPool.commonPool()
-            fetchUSerFromDB(userId);
+            return fetchUSerFromDB(userId);
         });
     }
 
