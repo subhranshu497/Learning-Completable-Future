@@ -5,10 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="065d72b4-470a-4a32-ae3b-4af8a600f345" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/learning/model/DashboardData.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/learning/model/Order.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/learning/model/Payment.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/learning/parallel/ParallelExecution.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/learning/errorhandling/errorHandling.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -19,8 +16,8 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Class" />
         <option value="Record" />
+        <option value="Class" />
       </list>
     </option>
   </component>
